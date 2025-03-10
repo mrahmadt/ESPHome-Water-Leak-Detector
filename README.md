@@ -10,6 +10,7 @@ The system sends real-time notifications and alerts via Home Assistant, helping 
 
 - ESPHome YAML configuration.
 - Home Assistant automation YAML.
+- Code to be included in configuration.yaml
 
 ### Contributions
 
