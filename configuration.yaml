@@ -1,0 +1,4 @@
+utility_meter:
+  daily_water_consumption_meter:
+    source: sensor.daily_water_consumption
+    cycle: daily
