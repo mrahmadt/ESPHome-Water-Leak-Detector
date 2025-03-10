@@ -1,0 +1,79 @@
+alias: Water Flow Monitoring
+description: Detect water leaks, toilet leaks, open taps, and daily usage spikes.
+triggers:
+  - id: small_leak
+    alias: Small Leak
+    entity_id: sensor.water_flow_rate
+    above: 0
+    below: 0.1
+    for: "00:05:00"
+    trigger: numeric_state
+  - id: toilet_leak
+    alias: Toilet Leak
+    entity_id: sensor.water_flow_rate
+    above: 0.1
+    below: 1
+    for: "00:01:00"
+    trigger: numeric_state
+  - id: tap_open
+    alias: Tap Left Open
+    entity_id: sensor.water_flow_rate
+    above: 1
+    for: "00:10:00"
+    trigger: numeric_state
+  - id: daily_reset
+    alias: Daily Reset
+    at: "00:00:00"
+    trigger: time
+  - id: daily_consumption_check
+    alias: Daily Consumption Check
+    at: "23:59:00"
+    trigger: time
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: small_leak
+        sequence:
+          - data:
+              message: 💧 Possible small leak detected!
+            action: notify.notify_me
+      - conditions:
+          - condition: trigger
+            id: toilet_leak
+        sequence:
+          - condition: template
+            value_template: >
+              {{ state_attr('automation.water_flow_monitoring',
+              'last_triggered') < now() - timedelta(minutes=10) }}
+          - data:
+              message: 🚽 Possible toilet leak detected!
+            action: notify.notify_me
+      - conditions:
+          - condition: trigger
+            id: tap_open
+        sequence:
+          - data:
+              message: 🚰 Water tap may be left open!
+            action: notify.notify_me
+      - conditions:
+          - condition: trigger
+            id: daily_reset
+        sequence:
+          - action: esphome.d1_mini_water_flow_reset_daily_water_consumption
+            data: {}
+      - conditions:
+          - condition: trigger
+            id: daily_consumption_check
+          - condition: template
+            value_template: >
+              {% set today = states('sensor.daily_water_consumption_meter') |
+              float(0) %} {% set yesterday =
+              states('sensor.daily_water_consumption_meter_yesterday') |
+              float(0) %} {{ yesterday > 0 and (today > yesterday * 1.20) }}
+        sequence:
+          - data:
+              message: ⚠️ Today's water usage is more than 20% higher than yesterday!
+            action: notify.notify_me
+mode: single
