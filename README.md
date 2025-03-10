@@ -18,3 +18,10 @@ The solution is functional but has room for improvement (e.g., better flow measu
 
 > **Note:** This solution requires some plumbing work. Alternative solutions, such as ultrasonic sensors, were either unreliable or costly in my testing.
 
+
+
+
+![Image](https://github.com/user-attachments/assets/9f6e92b1-40ef-4287-ab57-f52fe5827006)
+
+
+![Image](https://github.com/user-attachments/assets/a0d77c1e-1962-46c6-a651-a87301492c1d)
